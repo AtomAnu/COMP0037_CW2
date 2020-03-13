@@ -8,7 +8,9 @@ from math import pow,atan2,sqrt,pi
 from planned_path import PlannedPath
 import time
 import math
-
+#changes
+from cell import CellLabel
+#..........
 # This is the base class of the controller which moves the robot to its goal.
 # could do.
 
@@ -95,7 +97,12 @@ class ControllerBase(object):
             waypoint = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
 
             rospy.loginfo("Driving to waypoint (%f, %f)", waypoint[0], waypoint[1])
-
+            #changes
+            #search_cell = planner.getSearchGrid().getCellFromCoords(cell.coords)
+            #print("Cell Label: {}\n".format(search_cell.label))
+            #if search_cell.label == CellLabel.OBSTRUCTED:
+                #return False
+            #..........
             if self.abortCurrentGoal is True:
                 self.stopRobot()
                 return False

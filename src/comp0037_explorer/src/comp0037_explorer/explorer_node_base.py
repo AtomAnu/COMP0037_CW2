@@ -9,6 +9,10 @@ from comp0037_reactive_planner_controller.occupancy_grid import OccupancyGrid
 from comp0037_reactive_planner_controller.grid_drawer import OccupancyGridDrawer
 from geometry_msgs.msg  import Twist
 
+from geometry_msgs.msg  import Pose2D
+from nav_msgs.msg import Odometry
+from math import pow,atan2,sqrt,pi
+
 class ExplorerNodeBase(object):
 
     def __init__(self):
@@ -47,12 +51,29 @@ class ExplorerNodeBase(object):
         mapRequestService = rospy.ServiceProxy('request_map_update', RequestMapUpdate)
         mapUpdate = mapRequestService(True)
 
+        rospy.wait_for_message('/robot0/odom', Odometry)
+        self.currentOdometrySubscriber = rospy.Subscriber('/robot0/odom', Odometry, self.odometryCallback)
+        self.pose = Pose2D()
+
         while mapUpdate.initialMapUpdate.isPriorMap is True:
             self.kickstartSimulator()
             mapUpdate = mapRequestService(True)
             
         self.mapUpdateCallback(mapUpdate.initialMapUpdate)
+
+    def odometryCallback(self, odometry):
+        odometryPose = odometry.pose.pose
+
+        pose = Pose2D()
+
+        position = odometryPose.position
+        orientation = odometryPose.orientation
         
+        pose.x = position.x
+        pose.y = position.y
+        pose.theta = 2 * atan2(orientation.z, orientation.w)
+        self.pose = pose
+
     def mapUpdateCallback(self, msg):
         rospy.loginfo("map update received")
         
@@ -167,7 +188,7 @@ class ExplorerNodeBase(object):
             threading.Thread.__init__(self)
             self.explorer = explorer
             self.running = False
-            self.completed = False;
+            self.completed = False
 
 
         def isRunning(self):

@@ -41,6 +41,6 @@ class PassivePlannerController(PlannerControllerBase):
         self.currentPlannedPath = self.planner.extractPathToGoal()
 
         # Drive along the path the goal
+        #goalReached = self.controller.drivePathToGoal(self.planner, self.currentPlannedPath, goal.theta, self.planner.getPlannerDrawer())
         goalReached = self.controller.drivePathToGoal(self.currentPlannedPath, goal.theta, self.planner.getPlannerDrawer())
-
         return goalReached
