@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-
+from __future__ import division
+import time
 import sys
 import rospy
 import math
@@ -335,9 +336,28 @@ class MapperNode(object):
 
         return mapUpdateMessage
 
+    def calculate_entropy(self):
+        unknown_cells_count = 0
+        for x in range(0, self.occupancyGrid.getWidthInCells()):
+            for y in range(0, self.occupancyGrid.getHeightInCells()):
+                if self.occupancyGrid.getCell(x, y) == 0.5:
+                    unknown_cells_count += 1
+        entropy = unknown_cells_count*np.log(2)
+        print('################################# Entropy: {}'.format(entropy))
+        entropy_file = open('entropy_data.txt','a')
+        print('File open mode **********************{}'.format(entropy_file.mode))
+        #print('File content: {}'.format(entropy_file.read()))
+        entropy_file.write(str(entropy) + '\n')
+        entropy_file.close()
         
     def run(self):
+        #unknown_cells_count = 0
+        #start_time = time.time()
+        start_time = rospy.get_time()
         while not rospy.is_shutdown():
+            if rospy.get_time()-start_time > 5.0:
+                start_time = rospy.get_time()
+                self.calculate_entropy()  
             self.updateVisualisation()
             rospy.sleep(0.1)
         
