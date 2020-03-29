@@ -345,7 +345,7 @@ class MapperNode(object):
                     unknown_cells_count += 1
         entropy = unknown_cells_count*np.log(2)
         print('################################# Entropy: {}'.format(entropy))
-        entropy_file = open('entropy_data_part3.txt','a')
+        entropy_file = open('entropy_data_implemented.txt','a')
         #print('File open mode **********************{}'.format(entropy_file.mode))
         print('File name: {}'.format(os.path.realpath(entropy_file.name)))
         entropy_file.write(str(entropy) + '\n')
@@ -355,7 +355,7 @@ class MapperNode(object):
         #unknown_cells_count = 0
         #start_time = time.time()
         start_time = rospy.get_time()
-        entropy_file = open('entropy_data_part3.txt','w')
+        entropy_file = open('entropy_data_implemented.txt','w')
         entropy_file.close()
         while not rospy.is_shutdown():
             if rospy.get_time()-start_time > 5.0:
