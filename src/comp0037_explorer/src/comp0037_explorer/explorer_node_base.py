@@ -1,6 +1,9 @@
+from __future__ import division
+
 import rospy
 import threading
 import math
+import time
 
 from comp0037_mapper.msg import *
 from comp0037_mapper.srv import *
@@ -222,6 +225,8 @@ class ExplorerNodeBase(object):
                     
        
     def run(self):
+        
+        time_before_execution = time.time()
 
         explorerThread = ExplorerNodeBase.ExplorerThread(self)
 
@@ -240,6 +245,17 @@ class ExplorerNodeBase(object):
                 explorerThread.start()
 
             if explorerThread.hasCompleted() is True:
+                print('Hello ####################################################################################')
+                print('Total Time: {}'.format(time.time()-time_before_execution))
+                detected_cells_count = 0
+
+                for x in range(0, self.occupancyGrid.getWidthInCells()):
+                    for y in range(0, self.occupancyGrid.getHeightInCells()):
+                        if self.occupancyGrid.getCell(x, y) != 0.5:
+                            detected_cells_count += 1
+                detected_cells_ratio = detected_cells_count / (self.occupancyGrid.getWidthInCells()*self.occupancyGrid.getHeightInCells())
+                print('Number of Detected Cells: {}'.format(detected_cells_count))
+                print('Ratio: {}'.format(detected_cells_ratio))
                 explorerThread.join()
                 keepRunning = False
 
