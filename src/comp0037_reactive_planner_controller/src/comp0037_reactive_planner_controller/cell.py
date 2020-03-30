@@ -12,6 +12,10 @@ class CellLabel(Enum):
     UNVISITED=0
     DEAD=1
     ALIVE=2
+    map_open_list = 5
+    map_close_list = 6
+    frontier_open_list = 7
+    frontier_close_list = 8
 
 class Cell(object):
 
@@ -32,4 +36,6 @@ class Cell(object):
         # The initial path cost is infinite. For algorithms that need
         # it, this is the necessary initial condition.
         self.pathCost = float("inf")
+
+        self.Flabel = None
 
