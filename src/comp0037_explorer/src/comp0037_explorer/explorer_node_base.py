@@ -54,6 +54,7 @@ class ExplorerNodeBase(object):
         mapRequestService = rospy.ServiceProxy('request_map_update', RequestMapUpdate)
         mapUpdate = mapRequestService(True)
 
+        # Request the current pose of the robot
         rospy.wait_for_message('/robot0/odom', Odometry)
         self.currentOdometrySubscriber = rospy.Subscriber('/robot0/odom', Odometry, self.odometryCallback)
         self.pose = Pose2D()
@@ -64,6 +65,9 @@ class ExplorerNodeBase(object):
             
         self.mapUpdateCallback(mapUpdate.initialMapUpdate)
 
+    # Get the pose of the robot. Store this in a Pose2D structure because
+    # this is easy to use. Use radians for angles because these are used
+    # inside the control system.
     def odometryCallback(self, odometry):
         odometryPose = odometry.pose.pose
 
@@ -245,6 +249,7 @@ class ExplorerNodeBase(object):
             if explorerThread.isRunning() is False:
                 explorerThread.start()
 
+            # check the total time running the exploration and the coverage of the final map
             if explorerThread.hasCompleted() is True:
                 print('Hello ####################################################################################')
                 print('Total Time: {}'.format(rospy.get_time()-time_before_execution))
@@ -254,9 +259,12 @@ class ExplorerNodeBase(object):
                     for y in range(0, self.occupancyGrid.getHeightInCells()):
                         if self.occupancyGrid.getCell(x, y) != 0.5:
                             detected_cells_count += 1
+
                 detected_cells_ratio = detected_cells_count / (self.occupancyGrid.getWidthInCells()*self.occupancyGrid.getHeightInCells())
+
                 print('Number of Detected Cells: {}'.format(detected_cells_count))
                 print('Ratio: {}'.format(detected_cells_ratio))
+                
                 explorerThread.join()
                 keepRunning = False
 

@@ -97,12 +97,7 @@ class ControllerBase(object):
             waypoint = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
 
             rospy.loginfo("Driving to waypoint (%f, %f)", waypoint[0], waypoint[1])
-            #changes
-            #search_cell = planner.getSearchGrid().getCellFromCoords(cell.coords)
-            #print("Cell Label: {}\n".format(search_cell.label))
-            #if search_cell.label == CellLabel.OBSTRUCTED:
-                #return False
-            #..........
+
             if self.abortCurrentGoal is True:
                 self.stopRobot()
                 return False

@@ -37,5 +37,6 @@ class Cell(object):
         # it, this is the necessary initial condition.
         self.pathCost = float("inf")
 
+        # new label for WFD
         self.Flabel = None
 

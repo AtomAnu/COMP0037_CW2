@@ -18,32 +18,14 @@ class ExplorerNode(ExplorerNodeBase):
 
     def chooseNewDestination(self):
 
-
         print 'blackList:'
         for coords in self.blackList:
             print str(coords)
 
         candidateGood = False
         destination = None
-        """
-        smallestD2 = float('inf')
-        for x in range(0, self.occupancyGrid.getWidthInCells()):
-            for y in range(0, self.occupancyGrid.getHeightInCells()):
-                candidate = (x, y)
-                if self.isFrontierCell(x, y) is True:
-                    candidateGood = True
-                    for k in range(0, len(self.blackList)):
-                        if self.blackList[k] == candidate:
-                            candidateGood = False
-                            break
-                    
-                    if candidateGood is True:
-                        d2 = candidate[0]**2+(candidate[1]-0.5*self.occupancyGrid.getHeightInCells())**2
 
-                        if (d2 < smallestD2):
-                            destination = candidate
-                            smallestD2 = d2
-        """
+        # Use the Dijkstra planner find the closest frontier
         candidateGood, destination = self.planner.searchFrontier(self.pose, self.blackList)
         # If we got a good candidate, use it
 

@@ -83,8 +83,10 @@ class DijkstraPlanner(CellBasedForwardSearch):
              
         self.priorityQueue = newQueue
 
+    # search the closest frontier
     def searchFrontier(self, start, blackList):
-
+        
+        # change the pose to the coords
         startCoords = self.occupancyGrid.getCellCoordinatesFromWorldCoordinates([start.x, start.y])
         
         self.handleChangeToOccupancyGrid()
@@ -121,6 +123,7 @@ class DijkstraPlanner(CellBasedForwardSearch):
         # Reset the count
         self.numberOfCellsVisited = 0
 
+        # initialize return variable
         self.frontierGot = False
         self.frontier = None
 
@@ -133,8 +136,10 @@ class DijkstraPlanner(CellBasedForwardSearch):
                 return False
             
             cell = self.popCellFromQueue()
+            # check if the cell is frontier and not the start
             if (self.isFrontierCell(cell.coords[0], cell.coords[1]) == True and cell.coords != startCoords):
                 flag = False
+                # if the cell is not in the blacklist, it is the new destination
                 for k in range(0, len(blackList)):
                     if blackList[k] == cell.coords:
                         flag = True

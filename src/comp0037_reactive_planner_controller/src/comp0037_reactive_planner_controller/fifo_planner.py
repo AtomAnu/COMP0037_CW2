@@ -46,5 +46,6 @@ class FIFOPlanner(CellBasedForwardSearch):
         # Nothing to do in self case
         pass
 
+    # Mark the cell in WFD
     def markCell(self, cell, label):
         cell.Flabel = label

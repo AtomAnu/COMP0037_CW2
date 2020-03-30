@@ -21,34 +21,16 @@ class ExplorerNode2(ExplorerNodeBase):
 
     def chooseNewDestination(self):
 
-
         print 'blackList:'
         for coords in self.blackList:
             print str(coords)
 
         candidateGood = False
         destination = None
-        """
-        smallestD2 = float('inf')
-        for x in range(0, self.occupancyGrid.getWidthInCells()):
-            for y in range(0, self.occupancyGrid.getHeightInCells()):
-                candidate = (x, y)
-                if self.isFrontierCell(x, y) is True:
-                    candidateGood = True
-                    for k in range(0, len(self.blackList)):
-                        if self.blackList[k] == candidate:
-                            candidateGood = False
-                            break
-                    
-                    if candidateGood is True:
-                        d2 = candidate[0]**2+(candidate[1]-0.5*self.occupancyGrid.getHeightInCells())**2
 
-                        if (d2 < smallestD2):
-                            destination = candidate
-                            smallestD2 = d2
-        """
         frontiers = []
 
+        # change the pose to the coords
         startCoords = self.occupancyGrid.getCellCoordinatesFromWorldCoordinates([self.pose.x, self.pose.y])
         
         self.planner.handleChangeToOccupancyGrid()
@@ -95,6 +77,7 @@ class ExplorerNode2(ExplorerNodeBase):
             if cell.Flabel == CellLabel.map_close_list:
                 continue
 
+            # check if the cell is the frontier and not in the blacklist
             if self.isFrontierCell(cell.coords[0], cell.coords[1]) == True:
                 flag = False
                 for k in range(0, len(self.blackList)):
@@ -103,6 +86,7 @@ class ExplorerNode2(ExplorerNodeBase):
                         break
                 if flag:
                     break
+
                 # Make sure the queue is empty. We do this so that we can keep calling
                 # the same method multiple times and have it work.
                 while (self.planner.isQueueiEmpty() == False):
@@ -127,7 +111,8 @@ class ExplorerNode2(ExplorerNodeBase):
                     #print("Cell2: {}, {}".format(cell_2.coords, cell_2.Flabel))
                     if cell_2.Flabel == CellLabel.map_close_list or cell_2.Flabel == CellLabel.frontier_close_list:
                         continue
-
+                    
+                    # check if the cell is the frontier and not in the blacklist
                     if self.isFrontierCell(cell_2.coords[0], cell_2.coords[1]) == True:
                         flag = False
                         for k in range(0, len(self.blackList)):
@@ -136,9 +121,10 @@ class ExplorerNode2(ExplorerNodeBase):
                                 break
                         if flag:
                             break
+
                         newFrontier.append(cell_2)
                         cells = self.planner.getNextSetOfCellsToBeVisited(cell_2)
-
+                        # check if there is any adjacent cell should be checked next in the inner search loop
                         for nextCell in cells:
                             if (nextCell.Flabel != CellLabel.frontier_open_list) and (nextCell.Flabel != CellLabel.frontier_close_list) and \
                                 (nextCell.Flabel != CellLabel.map_close_list):
@@ -147,6 +133,7 @@ class ExplorerNode2(ExplorerNodeBase):
 
                     self.planner.markCell(nextCell, CellLabel.frontier_close_list)
 
+                # mark all cells in newFrontier as map_close_list
                 for c in newFrontier:
                     self.planner.markCell(c, CellLabel.map_close_list)
 
@@ -155,6 +142,8 @@ class ExplorerNode2(ExplorerNodeBase):
             cells = self.planner.getNextSetOfCellsToBeVisited(cell)
 
             for nextCell in cells:
+
+                # check if the cell which has not been searched and has open space neighbour
                 if (nextCell.Flabel != CellLabel.map_open_list) and (nextCell.Flabel != CellLabel.map_close_list):
                     neighbors = self.planner.getNextSetOfCellsToBeVisited(cell)
                     for nextNeighbor in neighbors:
@@ -165,16 +154,14 @@ class ExplorerNode2(ExplorerNodeBase):
             
             self.planner.markCell(cell, CellLabel.map_close_list)
 
-        #d = 0
-        #for a in frontiers:
-        #    for b in a:
-        #        print("{} Cell: {}, {}".format(d, b.coords, b.Flabel))
-        #    d += 1
         if len(frontiers) != 0:
             frontiersCoords = []
-            #medians = []
+
+            # find the cluster containing the largest number of frontiers
             for frontier in max(frontiers, key=len):
                 frontiersCoords.append(frontier.coords)
+
+            # calculate and round the median
             temp = np.round(np.median(np.array(frontiersCoords), axis=0))
             destination = (temp[0], temp[1])
             candidateGood = True
