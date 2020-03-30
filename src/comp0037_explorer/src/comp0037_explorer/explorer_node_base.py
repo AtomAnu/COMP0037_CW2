@@ -226,7 +226,8 @@ class ExplorerNodeBase(object):
        
     def run(self):
         
-        time_before_execution = time.time()
+        #time_before_execution = time.time()
+        time_before_execution = rospy.get_time()
 
         explorerThread = ExplorerNodeBase.ExplorerThread(self)
 
@@ -246,7 +247,7 @@ class ExplorerNodeBase(object):
 
             if explorerThread.hasCompleted() is True:
                 print('Hello ####################################################################################')
-                print('Total Time: {}'.format(time.time()-time_before_execution))
+                print('Total Time: {}'.format(rospy.get_time()-time_before_execution))
                 detected_cells_count = 0
 
                 for x in range(0, self.occupancyGrid.getWidthInCells()):
